@@ -1,0 +1,21 @@
+name: xCorePvP
+main: Megapix96\Main
+version: 0.1.0
+api: [1.10.0]
+load: POSTWORLD
+author: Megapix96
+commands:
+ setredres:
+  description: "Redチームのリスポーン地点を決めます"
+ setblueres:
+  description: "Blueチームのリスポーン地点を決めます"
+ setredcore:
+  description: "Redチームのコアの場所を決めます"
+ setbluecore:
+  description: "Blueチームのコアの場所を決めます"
+ setjoinblock:
+  description: "CorePvPにJoinする時にTapするブロックの場所を決めます"
+ setlobbypos:
+  description: "Lobbyの場所を決めます"
+ hub:
+  description: "5秒後にhubへと戻ります"
