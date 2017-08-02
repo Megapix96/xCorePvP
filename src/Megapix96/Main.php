@@ -22,6 +22,8 @@ use pocketmine\utils\Config;
 
 class Main extends PluginBase implements Listener{
 
+	public $red, $blue = 0;
+	public $redhp, $bluehp = 75;
     public $settingsConfig, $settings, $positionConfig, $position;
 
     public function onEnable(){
@@ -60,7 +62,7 @@ class Main extends PluginBase implements Listener{
 
         foreach ($this->positionConfig->getAll() as $key => $value) {
             $this->position[$key] = $this->toPosition($value);
-            $this->getServer()->loadLevel($this->position[$key]->getLevel());
+            $this->getServer()->loadLevel($this->position[$key]->getLevel()->getName());
         }
 
         $this->getLogger()->info("§a初めてこのプラグインを入れた方への解説");
@@ -75,14 +77,13 @@ class Main extends PluginBase implements Listener{
         $this->getLogger()->info("§fその後に§bSettings.json§f のEnableを§atrue§fに変えてください。");
         $this->getLogger()->info("§f※§bSettings.json§f のEnable以外はどちらでも良いです");
 
-        $s = $this->stg;
-        if (!($s["enable"])) {
+        if (!($this->settings["enable"])) {
             $this->getLogger()->alert("§cEnable が falseだった為プラグインを終了します。");
             //$this->getServer()->getPluginManager()->disablePlugin($this);
         }
 
-        if ($s["money"]) {
-            if ($s["money.api"] === "EconomyAPI") {
+        if ($this->settings["money"]) {
+            if ($this->settings["money.api"] === "EconomyAPI") {
                 if ($this->getServer()->getPluginManager()->getPlugin("EconomyAPI") != null) {
                     $this->ecn = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
                     $this->getLogger()->info("§aEconomyAPIを読み込みました!");
@@ -90,7 +91,7 @@ class Main extends PluginBase implements Listener{
                     $this->getLogger()->warning("§cEconomyAPIが見つかりませんでした!");
                     $this->getServer()->getPluginManager()->disablePlugin($this);
                 }
-            } else if ($s["money.api"] === "PocketMoney") {
+            } else if ($this->settings["money.api"] === "PocketMoney") {
                 if ($this->getServer()->getPluginManager()->getPlugin("PocketMoney") != null) {
                     $this->pkm = $this->getServer()->getPluginManager()->getPlugin("PocketMoney");
                     $this->getLogger()->info("§aPocketMoneyを読み込みました!");
@@ -99,17 +100,12 @@ class Main extends PluginBase implements Listener{
                     $this->getServer()->getPluginManager()->disablePlugin($this);
                 }
             } else {
-                $this->getLogger()->warning("§c" . $s["money.api"] . " というAPIには対応していません!");
+                $this->getLogger()->warning("§c" . $this->settings["money.api"] . " というAPIには対応していません!");
                 $this->getServer()->getPluginManager()->disablePlugin($this);
             }
         }
 
-        $this->red = 0;
-        $this->blue = 0;
-        $this->redhp = 75;
-        $this->bluehp = 75;
-
-        if ($s['popup']) {
+        if ($this->settings['popup']) {
             $this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, 'popup'], []), 20 * 1.5);
         }
     }
