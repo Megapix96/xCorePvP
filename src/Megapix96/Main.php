@@ -24,58 +24,58 @@ class Main extends PluginBase implements Listener{
 
     public $settingsConfig, $settings, $positionConfig, $position;
 
-        function onEnable(){
-                $this->getServer()->getPluginManager()->registerEvents($this, $this);
-                if(!file_exists($this->getDataFolder())) @mkdir($this->getDataFolder(), 0721, true);
+    public function onEnable(){
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        if(!file_exists($this->getDataFolder())) @mkdir($this->getDataFolder(), 0721, true);
 
-                $positionData = ["x" => 0, "y" => 0, "z" => 0, "level" => "world"];
-                $this->settingsConfig = new Config($this->getDataFolder() . "Settings.json", Config::JSON,[
-                    "enable" => false,
-                    "popup" => false,
-                    "money" => false,
-                    "money.api" => "EconomyAPI",
-                    "money.kill" => false,
-                    "money.kill.amount" => 100,
-                    "money.win" => false,
-                    "money.win.amount" => 2500,
-                    "death.keep.inventory" => false,
-                    "death.keep.effects" => false,
-                    "death.keep.exp" => false,
-                    "teamchat" => true,
-                    "teamchat.str" => "@",
-                    "shutdown" => false
-                ]);
-                $this->positionConfig = new Config($this->getDataFolder() . "Position.json", Config::JSON, [
-                    "respawn.red" => $positionData,
-                    "respawn.blue" => $positionData,
-                    "core.red" => $positionData,
-                    "core.blue" => $positionData,
-                    "join.pos" => $positionData,
-                    "lobby.pos" => $positionData
-                ]);
+        $positionData = ["x" => 0, "y" => 0, "z" => 0, "level" => "world"];
+        $this->settingsConfig = new Config($this->getDataFolder() . "Settings.json", Config::JSON, [
+            "enable" => false,
+            "popup" => false,
+            "money" => false,
+            "money.api" => "EconomyAPI",
+            "money.kill" => false,
+            "money.kill.amount" => 100,
+            "money.win" => false,
+            "money.win.amount" => 2500,
+            "death.keep.inventory" => false,
+            "death.keep.effects" => false,
+            "death.keep.exp" => false,
+            "teamchat" => true,
+            "teamchat.str" => "@",
+            "shutdown" => false
+        ]);
+        $this->positionConfig = new Config($this->getDataFolder() . "Position.json", Config::JSON, [
+            "respawn.red" => $positionData,
+            "respawn.blue" => $positionData,
+            "core.red" => $positionData,
+            "core.blue" => $positionData,
+            "join.pos" => $positionData,
+            "lobby.pos" => $positionData
+        ]);
 
-                foreach ($this->settingsConfig->getAll() as $key => $value) {
-                    $this->settings[$key] = $value;
-                }
+        foreach ($this->settingsConfig->getAll() as $key => $value) {
+            $this->settings[$key] = $value;
+        }
 
-                foreach ($this->positionConfig->getAll() as $key => $value) {
-                    $this->position[$key] = $this->toPosition($value);
-                    $this->getServer()->loadLevel($this->position[$key]->getLevel());
-                }
+        foreach ($this->positionConfig->getAll() as $key => $value) {
+            $this->position[$key] = $this->toPosition($value);
+            $this->getServer()->loadLevel($this->position[$key]->getLevel());
+        }
 
-                $this->getLogger()->info("§a初めてこのプラグインを入れた方への解説");
-                $this->getLogger()->info("§9まずコマンドを実行しよう!");
-                $this->getLogger()->info("§bOP側が設定するコマンド:");
-                $this->getLogger()->info("§e/setredres §fこのコマンドを入力したプレイヤーのいる地点が§cRedTeam§fのリスポーン地点になります。");
-                $this->getLogger()->info("§e/setblueres §fこのコマンドを入力したプレイヤーのいる地点が§9BlueTeam§fのリスポーン地点になります。");
-                $this->getLogger()->info("§e/setredcore §fこのコマンドを入力したあとに、ブロックをTapすると そのブロックが§cRedTeam§fのコアになります。");
-                $this->getLogger()->info("§e/setbluecore §fこのコマンドを入力したあとに、ブロックをTapすると そのブロックが§9BlueTeam§fのコアになります。");
-                $this->getLogger()->info("§e/setjoinblock §fこのコマンドを入力したあとに、ブロックをTapすると そのブロックをTapすると試合に参加出来るようになります。");
-                $this->getLogger()->info("§e/setlobbypos §fこのコマンドを入力したプレイヤーのいる地点が§6Lobby§fとなります。");
-                $this->getLogger()->info("§fその後に§bSettings.json§f のEnableを§atrue§fに変えてください。");
-                $this->getLogger()->info("§f※§bSettings.json§f のEnable以外はどちらでも良いです");
-                $s = $this->stg;
+        $this->getLogger()->info("§a初めてこのプラグインを入れた方への解説");
+        $this->getLogger()->info("§9まずコマンドを実行しよう!");
+        $this->getLogger()->info("§bOP側が設定するコマンド:");
+        $this->getLogger()->info("§e/setredres §fこのコマンドを入力したプレイヤーのいる地点が§cRedTeam§fのリスポーン地点になります。");
+        $this->getLogger()->info("§e/setblueres §fこのコマンドを入力したプレイヤーのいる地点が§9BlueTeam§fのリスポーン地点になります。");
+        $this->getLogger()->info("§e/setredcore §fこのコマンドを入力したあとに、ブロックをTapすると そのブロックが§cRedTeam§fのコアになります。");
+        $this->getLogger()->info("§e/setbluecore §fこのコマンドを入力したあとに、ブロックをTapすると そのブロックが§9BlueTeam§fのコアになります。");
+        $this->getLogger()->info("§e/setjoinblock §fこのコマンドを入力したあとに、ブロックをTapすると そのブロックをTapすると試合に参加出来るようになります。");
+        $this->getLogger()->info("§e/setlobbypos §fこのコマンドを入力したプレイヤーのいる地点が§6Lobby§fとなります。");
+        $this->getLogger()->info("§fその後に§bSettings.json§f のEnableを§atrue§fに変えてください。");
+        $this->getLogger()->info("§f※§bSettings.json§f のEnable以外はどちらでも良いです");
 
+        $s = $this->stg;
         if (!($s["enable"])) {
             $this->getLogger()->alert("§cEnable が falseだった為プラグインを終了します。");
             //$this->getServer()->getPluginManager()->disablePlugin($this);
@@ -85,7 +85,7 @@ class Main extends PluginBase implements Listener{
             if ($s["money.api"] === "EconomyAPI") {
                 if ($this->getServer()->getPluginManager()->getPlugin("EconomyAPI") != null) {
                     $this->ecn = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
-                            $this->getLogger()->info("§aEconomyAPIを読み込みました!");
+                    $this->getLogger()->info("§aEconomyAPIを読み込みました!");
                 } else {
                     $this->getLogger()->warning("§cEconomyAPIが見つかりませんでした!");
                     $this->getServer()->getPluginManager()->disablePlugin($this);
@@ -93,7 +93,7 @@ class Main extends PluginBase implements Listener{
             } else if ($s["money.api"] === "PocketMoney") {
                 if ($this->getServer()->getPluginManager()->getPlugin("PocketMoney") != null) {
                     $this->pkm = $this->getServer()->getPluginManager()->getPlugin("PocketMoney");
-                            $this->getLogger()->info("§aPocketMoneyを読み込みました!");
+                    $this->getLogger()->info("§aPocketMoneyを読み込みました!");
                 } else {
                     $this->getLogger()->warning("§cPocketMoneyが見つかりませんでした!");
                     $this->getServer()->getPluginManager()->disablePlugin($this);
@@ -105,16 +105,16 @@ class Main extends PluginBase implements Listener{
         }
 
         $this->red = 0;
-                $this->blue = 0;
-                $this->redhp = 75;
-                $this->bluehp = 75;
+        $this->blue = 0;
+        $this->redhp = 75;
+        $this->bluehp = 75;
 
         if ($s['popup']) {
             $this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, 'popup'], []), 20 * 1.5);
         }
     }
 
-    function onJoin(PlayerJoinEvent $ev) {
+    public function onJoin(PlayerJoinEvent $ev) {
         if (!($this->stg["enable"])) return;
         $p = $ev->getPlayer();
         $n = $p->getName();
@@ -122,7 +122,7 @@ class Main extends PluginBase implements Listener{
         $this->returnToHub($p, false);
     }
 
-    function onQuit(PlayerQuitEvent $ev) {
+    public function onQuit(PlayerQuitEvent $ev) {
         if (!($this->stg["enable"])) return;
         $p = $ev->getPlayer();
         if ($this->team[$p->getName()] === "Red") {
@@ -133,7 +133,7 @@ class Main extends PluginBase implements Listener{
         $this->team[$p->getName()] = false;
     }
 
-    function onCommand(CommandSender $p, Command $c, $l, array $a) {
+    public function onCommand(CommandSender $p, Command $c, $l, array $a) {
         switch (strtolower($c->getName())) {
             case "setredres":
                 if (!$p->isOp()) return;
@@ -184,7 +184,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    function onDamage(EntityDamageEvent $ev) {
+    public function onDamage(EntityDamageEvent $ev) {
         if (!($this->stg["enable"])) return;
         if ($ev instanceof EntityDamageByEntityEvent) {
             if ($this->team[$ev->getEntity()->getName()] !== false) {
@@ -240,7 +240,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    function onBreak(BlockBreakEvent $ev) {
+    public function onBreak(BlockBreakEvent $ev) {
         if (!($this->stg["enable"])) return;
         $p = $ev->getPlayer();
         $b = $ev->getBlock();
@@ -272,7 +272,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    function onChat(PlayerChatEvent $ev){
+    public function onChat(PlayerChatEvent $ev) {
         if ($this->stg["teamchat"]) {
             if (strpos($ev->getMessage(), $this->stg["teamchat.str"]) !== false) {
                 $ev->setCancelled();
@@ -285,7 +285,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    function onInteract(PlayerInteractEvent $ev){
+    public function onInteract(PlayerInteractEvent $ev) {
         $p = $ev->getPlayer();
         $n = $p->getName();
         $b = $ev->getBlock();
@@ -342,7 +342,7 @@ class Main extends PluginBase implements Listener{
         }
     }
 
-    function endGame($win) {
+    private function endGame($win) {
         $this->getServer()->broadcastMessage("§a" . $win . " チームの勝利!!");
         $pos = $this->position["lobby.pos"];
         foreach ($this->getServer()->getOnlinePlayers() as $p) {
@@ -365,15 +365,15 @@ class Main extends PluginBase implements Listener{
             $p->removeAllEffects();
         }
         $this->red = 0;
-                $this->blue = 0;
-                $this->redhp = 75;
-                $this->bluehp = 75;
-                if ($this->stg["shutdown"]) {
-                    $this->getServer()->shutdown();
-                }
+        $this->blue = 0;
+        $this->redhp = 75;
+        $this->bluehp = 75;
+        if ($this->stg["shutdown"]) {
+            $this->getServer()->shutdown();
+        }
     }
 
-    function popup(){
+    public function popup(){
         if (!($this->stg["enable"])) return;
         $this->getServer()->broadcastPopup("          §cRed | §6Join:" . $this->red . " §aHP:" . $this->redhp . "\n          §9Blue | §6Join:" . $this->blue . " §aHP:" . $this->bluehp);
     }
