@@ -136,13 +136,6 @@ class Main extends PluginBase implements Listener{
         $this->team[$p->getName()] = false;
     }
 
-    /**
-     * @param CommandSender $p
-     * @param Command $c
-     * @param string $l
-     * @param array $a
-     * @return bool
-     */
     public function onCommand(CommandSender $p, Command $c, $l, array $a) {
         if ($p instanceof ConsoleCommandSender) {
             $this->getLogger()->critical("ゲーム内で実行してください");
@@ -202,13 +195,13 @@ class Main extends PluginBase implements Listener{
 
     public function onDamage(EntityDamageEvent $ev) {
         if (!($this->settings["enable"])) return;
+        $p = $ev->getEntity();
         if ($ev instanceof EntityDamageByEntityEvent) {
-            if ($this->team[$ev->getEntity()->getName()] !== false) {
-                if ($this->team[$ev->getDamager()->getName()] === $this->team[$ev->getEntity()->getName()]) {
+            if ($this->team[$p->getName()] !== false) {
+                if ($this->team[$ev->getDamager()->getName()] === $this->team[$p->getName()]) {
                     $ev->setCancelled();
-                }else{
-                    $p = $ev->getEntity();
-                    if($p->getHealth() - $ev->getDamage() <= 0) {
+                } else {
+                    if ($p->getHealth() - round($ev->getFinalDamage()) <= 0) {
                         $ev->setCancelled();
                         $p->setHealth(20);
                         $p->setFood(20);
@@ -229,7 +222,7 @@ class Main extends PluginBase implements Listener{
                     }
                     if ($this->settings['money.kill']) {
                         $d = $ev->getDamager();
-                        if ($this->settings['money.api'] === "EconomyAPI"){
+                        if ($this->settings['money.api'] === "EconomyAPI") {
                             $this->moneyApi->addMoney($d->getName(), $this->settings['money.kill.amount']);
                         } else {
                             $this->moneyApi->grantMoney($d->getName(), $this->settings['killmoney.money']);
@@ -237,21 +230,20 @@ class Main extends PluginBase implements Listener{
                         $d->sendPopup("§e+ " . $this->settings['money.kill.amount'] . " coins!");
                     }
                 }
-            } else {
-            $p = $ev->getEntity();
-                if($p->getHealth() - $ev->getDamage() <= 0) {
-                    $ev->setCancelled();
-                    $p->setHealth(20);
-                    $p->setFood(20);
-                    $p->setExp(0);
-                    $p->getInventory()->clearAll();
-                    $p->removeAllEffects();
-                    $t = $this->team[$p->getName()];
-                    $pos = $t === "Red" ? $this->position["respawn.red"] : $this->position["respawn.blue"];
-                    $p->teleport($pos);
-                    $p->sendMessage("死んでしまったので、復活しました");
-                    $this->setDefaultArmor($p);
-                }
+            }
+         } else {
+            if($p->getHealth() - round($ev->getFinalDamage()) <= 0) {
+                $ev->setCancelled();
+                $p->setHealth(20);
+                $p->setFood(20);
+                $p->setExp(0);
+                $p->getInventory()->clearAll();
+                $p->removeAllEffects();
+                $t = $this->team[$p->getName()];
+                $pos = $t === "Red" ? $this->position["respawn.red"] : $this->position["respawn.blue"];
+                $p->teleport($pos);
+                $p->sendMessage("死んでしまったので、復活しました");
+                $this->setDefaultArmor($p);
             }
         }
     }
@@ -394,7 +386,7 @@ class Main extends PluginBase implements Listener{
         $this->getServer()->broadcastPopup("          §cRed | §6Join:" . $this->red . " §aHP:" . $this->redhp . "\n          §9Blue | §6Join:" . $this->blue . " §aHP:" . $this->bluehp);
     }
 
-    private function returnToHub(Player $p, boolean $sendMessage = true) {
+    private function returnToHub(Player $p, $sendMessage = true) {
         if ($this->team[$p->getName()] === "Red") {
             $this->red--;
             $p->setDisplayName($p->getName());
