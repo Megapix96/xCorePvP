@@ -1,8 +1,6 @@
 <?php
 namespace Megapix96;
 
-use pocketmine\Player;
-use pocketmine\item\Armor;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -14,9 +12,13 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\level\sound\AnvilFallSound;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\utils\Color;
@@ -371,7 +373,6 @@ class Main extends PluginBase implements Listener{
                     }
                 }
             }
-            $this->team[$p->getName()] = false;
             $p->teleport($pos);
             $p->setHealth(20);
             $p->setFood(20);
@@ -383,6 +384,7 @@ class Main extends PluginBase implements Listener{
         $this->blue = 0;
         $this->redhp = 75;
         $this->bluehp = 75;
+        $this->team = [];
         if ($this->settings["shutdown"]) {
             $this->getServer()->shutdown();
         }
