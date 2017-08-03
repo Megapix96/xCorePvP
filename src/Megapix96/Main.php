@@ -401,7 +401,7 @@ class Main extends PluginBase implements Listener{
     private function setDefaultArmor($p) {
         $team = $this->team[$p->getName()];
         for ($i = 0; $i <= 3; $i++) {
-            $item = I::get(298 + $i, 0, 1);
+            $item = Item::get(298 + $i, 0, 1);
             if ($team === "Red") {
                 $item->setCustomColor(Color::getRGB(255,0,0));
             } else if($team === "Blue") {
