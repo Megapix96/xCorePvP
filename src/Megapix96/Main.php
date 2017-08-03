@@ -38,7 +38,7 @@ class Main extends PluginBase implements Listener{
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         if(!file_exists($this->getDataFolder())) @mkdir($this->getDataFolder(), 0721, true);
 
-        $positionData = ["x" => 0, "y" => 0, "z" => 0, "level" => $this->getServer()->getDefaultLevel()];
+        $positionData = ["x" => 0, "y" => 0, "z" => 0, "level" => $this->getServer()->getDefaultLevel()->getName()];
         $this->settingsConfig = new Config($this->getDataFolder() . "settings.json", Config::JSON, [
             "enable" => false,
             "popup" => false,
