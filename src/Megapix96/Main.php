@@ -70,13 +70,11 @@ class Main extends PluginBase implements Listener{
 
         foreach ($this->positionConfig->getAll() as $key => $value) {
             $this->position[$key] = $this->toPosition($value);
-            try {
-                $this->position[$key]->getLevel();
-            } catch (Exception $e) {
+            if (empty ($this->getServer()->getLevelByName($value["level"]))) {
                 $this->getLogger()->critical("world名が異常です!");
                 $this->getServer()->getPluginManager()->disablePlugin($this);
             }
-            $this->getServer()->loadLevel($this->position[$key]->getLevel()->getName());
+            $this->getServer()->loadLevel($value["level"]);
         }
 
         $this->getLogger()->info("§a初めてこのプラグインを入れた方への解説");
