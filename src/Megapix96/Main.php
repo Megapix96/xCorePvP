@@ -25,15 +25,16 @@ use pocketmine\utils\Config;
 
 class Main extends PluginBase implements Listener{
 
-	public $red, $blue = 0;
-	public $redhp, $bluehp = 75;
-	public $team = [];
+    public $red, $blue = 0;
+    public $redHp, $blueHp = 75;
+    public $team = [];
+
     public $settingsConfig, $settings, $positionConfig, $position;
     public $redCoreTap, $blueCoreTap, $joinBlockTap;
 
     public $moneyApi;
 
-    public function onEnable(){
+    public function onEnable() {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         if(!file_exists($this->getDataFolder())) @mkdir($this->getDataFolder(), 0721, true);
 
@@ -264,22 +265,22 @@ class Main extends PluginBase implements Listener{
         if ($redCore->equals(b)){
             $ev->setCancelled();
             if ($this->team[$n] === "Blue") {
-                $this->redhp--;
-                $this->getServer()->broadcastMessage("§cRed §aのコアが §6" . $n . " §aにより壊されています! §a| §e" . $this->redhp . " / 75");
+                $this->redHp--;
+                $this->getServer()->broadcastMessage("§cRed §aのコアが §6" . $n . " §aにより壊されています! §a| §e" . $this->redHp . " / 75");
                 $c = $this->position["core.red"];
                 $p->getLevel()->addSound(new AnvilFallSound($redCore));
-                if ($this->redhp <= 0) {
+                if ($this->redHp <= 0) {
                     $this->endGame("Blue");
                 }
             }
         }else if ($blueCore->equals(b)){
             $ev->setCancelled();
             if ($this->team[$n] === "Red") {
-                $this->bluehp--;
-                $this->getServer()->broadcastMessage("§9Blue §aのコアが §6".$n." §aにより壊されています! §a| §e" . $this->bluehp . " / 75");
+                $this->blueHp--;
+                $this->getServer()->broadcastMessage("§9Blue §aのコアが §6".$n." §aにより壊されています! §a| §e" . $this->blueHp . " / 75");
                 $c = $this->position["core.blue"];
                 $p->getLevel()->addSound(new AnvilFallSound($blueCore));
-                if ($this->bluehp <= 0) {
+                if ($this->blueHp <= 0) {
                     $this->endGame("Red");
                 }
             }
@@ -379,8 +380,8 @@ class Main extends PluginBase implements Listener{
         }
         $this->red = 0;
         $this->blue = 0;
-        $this->redhp = 75;
-        $this->bluehp = 75;
+        $this->redHp = 75;
+        $this->blueHp = 75;
         $this->team = [];
         if ($this->settings["shutdown"]) {
             $this->getServer()->shutdown();
@@ -389,7 +390,7 @@ class Main extends PluginBase implements Listener{
 
     public function popup(){
         if (!($this->settings["enable"])) return;
-        $this->getServer()->broadcastPopup("          §cRed | §6Join:" . $this->red . " §aHP:" . $this->redhp . "\n          §9Blue | §6Join:" . $this->blue . " §aHP:" . $this->bluehp);
+        $this->getServer()->broadcastPopup("          §cRed | §6Join:" . $this->red . " §aHP:" . $this->redHp . "\n          §9Blue | §6Join:" . $this->blue . " §aHP:" . $this->blueHp);
     }
 
     private function returnToHub(Player $p, $sendMessage = true) {
