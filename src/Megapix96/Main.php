@@ -37,7 +37,7 @@ class Main extends PluginBase implements Listener{
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         if(!file_exists($this->getDataFolder())) @mkdir($this->getDataFolder(), 0721, true);
 
-        $positionData = ["x" => 0, "y" => 0, "z" => 0, "level" => "world"];
+        $positionData = ["x" => 0, "y" => 0, "z" => 0, "level" => $this->getServer()->getDefaultLevel()];
         $this->settingsConfig = new Config($this->getDataFolder() . "settings.json", Config::JSON, [
             "enable" => false,
             "popup" => false,
@@ -69,6 +69,12 @@ class Main extends PluginBase implements Listener{
 
         foreach ($this->positionConfig->getAll() as $key => $value) {
             $this->position[$key] = $this->toPosition($value);
+            try {
+                $this->position[$key]->getLevel();
+            } catch (Exception $e) {
+                $this->getLogger()->critical("world名が異常です!");
+                $this->getServer()->getPluginManager()->disablePlugin($this);
+            }
             $this->getServer()->loadLevel($this->position[$key]->getLevel()->getName());
         }
 
