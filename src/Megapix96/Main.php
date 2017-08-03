@@ -12,7 +12,6 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
-use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\level\sound\AnvilFallSound;
