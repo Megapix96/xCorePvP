@@ -260,7 +260,7 @@ class Main extends PluginBase implements Listener{
         $n = $p->getName();
         $redCore = $this->position["core.red"];
         $blueCore = $this->position["core.blue"];
-        if ($redCore->equals(b)){
+        if ($redCore->equals(b)) {
             $ev->setCancelled();
             if ($this->team[$n] === "Blue") {
                 $this->redHp--;
@@ -271,7 +271,7 @@ class Main extends PluginBase implements Listener{
                     $this->endGame("Blue");
                 }
             }
-        }else if ($blueCore->equals($b))){
+        }else if ($blueCore->equals($b)) {
             $ev->setCancelled();
             if ($this->team[$n] === "Red") {
                 $this->blueHp--;
