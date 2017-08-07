@@ -155,14 +155,14 @@ class Main extends PluginBase implements Listener{
         switch (strtolower($c->getName())) {
             case "setredres":
                 $this->position["respawn.red"] = $p->getPosition();
-                $this->positionConfig->set("respawn.red", $this->position["respawn.red"]);
+                $this->positionConfig->set("respawn.red", $this->toArray($this->position["respawn.red"]));
                 $this->positionConfig->save();
                 $p->sendMessage("RedTeamのRespawn地点をセットしました");
                 break;
 
             case "setblueres":
                 $this->position["respawn.blue"] = $p->getPosition();
-                $this->positionConfig->set("respawn.blue", $this->position["respawn.blue"]);
+                $this->positionConfig->set("respawn.blue", $this->toArray($this->position["respawn.blue"]));
                 $this->positionConfig->save();
                 $p->sendMessage("BlueTeamのRespawn地点をセットしました");
                 break;
@@ -184,7 +184,7 @@ class Main extends PluginBase implements Listener{
 
             case "setlobbypos":
                 $this->position["lobby.pos"] = $p->getPosition();
-                $this->positionConfig->set("lobby.pos", $this->position["lobby.pos"]);
+                $this->positionConfig->set("lobby.pos", $this->toArray($this->position["lobby.pos"]));
                 $this->positionConfig->save();
                 $p->sendMessage("Lobbyをセットしました");
                 break;
@@ -336,19 +336,19 @@ class Main extends PluginBase implements Listener{
         if (!$p->isOp()) return;
         if (isset ($this->redCoreTap[$n])) {
             $this->position["core.red"] = $b->asPosition();
-            $this->positionConfig->set("core.red", $this->position["core.red"]);
+            $this->positionConfig->set("core.red", $this->toArray($this->position["core.red"]));
             $this->positionConfig->save();
             unset ($this->redCoreTap[$p->getName()]);
             $p->sendMessage("RedのCoreの位置をセットしました");
         } else if (isset ($this->blueCoreTap[$n])) {
             $this->position["core.blue"] = $b->asPosition();
-            $this->positionConfig->set("core.blue", $this->position["core.blue"]);
+            $this->positionConfig->set("core.blue", $this->toArray($this->position["core.blue"]));
             $this->positionConfig->save();
             unset ($this->blueCoreTap[$p->getName()]);
             $p->sendMessage("BlueのCoreの位置をセットしました");
         } else if (isset ($this->joinBlockTap[$n])) {
             $this->position["join.pos"] = $b->asPosition();
-            $this->positionConfig->set("join.pos", $this->position["join.pos"]);
+            $this->positionConfig->set("join.pos", $this->toArray($this->position["join.pos"]));
             $this->positionConfig->save();
             unset ($this->joinBlockTap[$p->getName()]);
             $p->sendMessage("Join用ブロックの位置をセットしました");
@@ -442,7 +442,11 @@ class Main extends PluginBase implements Listener{
         return $item;
     }
 
-    private function toPosition(array $configPosition) {
+    private function toPosition(array $configPosition) : Position {
         return new Position($configPosition["x"], $configPosition["y"], $configPosition["z"], $this->getServer()->getLevelByName($configPosition["level"]));
+    }
+
+    private function toArray(Position $position) : array {
+        return ["x" => $position->x, "y" => $position->y, "z" => $position->z, "level" => $position->getLevel()->getName()];
     }
 }
