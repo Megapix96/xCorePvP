@@ -303,7 +303,7 @@ class Main extends PluginBase implements Listener{
         $n = $p->getName();
         $b = $ev->getBlock();
         if ($this->settings["enable"]) {
-            if ($b->asPosition()->equals($this->position["join.pos"])) {
+            if ($b->equals($this->position["join.pos"])) {
                 if (empty ($this->team[$n])) {
                     if ($this->red < $this->blue) {
                         $this->red++;
@@ -447,6 +447,6 @@ class Main extends PluginBase implements Listener{
     }
 
     private function toArray(Position $position) : array {
-        return ["x" => $position->x, "y" => $position->y, "z" => $position->z, "level" => $position->getLevel()->getName()];
+        return ["x" => (int) $position->x, "y" => (int) $position->y, "z" => (int) $position->z, "level" => $position->getLevel()->getName()];
     }
 }
