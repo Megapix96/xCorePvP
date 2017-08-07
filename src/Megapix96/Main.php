@@ -335,19 +335,19 @@ class Main extends PluginBase implements Listener{
         }
         if (!$p->isOp()) return;
         if (isset ($this->redCoreTap[$n])) {
-            $this->position["core.red"] = $b->position();
+            $this->position["core.red"] = $b->asPosition();
             $this->positionConfig->set("core.red", $this->position["core.red"]);
             $this->positionConfig->save();
             unset ($this->redCoreTap[$p->getName()]);
             $p->sendMessage("RedのCoreの位置をセットしました");
         } else if (isset ($this->blueCoreTap[$n])) {
-            $this->position["core.blue"] = $b->position();
+            $this->position["core.blue"] = $b->asPosition();
             $this->positionConfig->set("core.blue", $this->position["core.blue"]);
             $this->positionConfig->save();
             unset ($this->blueCoreTap[$p->getName()]);
             $p->sendMessage("BlueのCoreの位置をセットしました");
         } else if (isset ($this->joinBlockTap[$n])) {
-            $this->position["join.pos"] = $b->position();
+            $this->position["join.pos"] = $b->asPosition();
             $this->positionConfig->set("join.pos", $this->position["join.pos"]);
             $this->positionConfig->save();
             unset ($this->joinBlockTap[$p->getName()]);
