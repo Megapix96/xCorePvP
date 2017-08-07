@@ -303,7 +303,7 @@ class Main extends PluginBase implements Listener{
         $n = $p->getName();
         $b = $ev->getBlock();
         if ($this->settings["enable"]){
-            if ($b.equals($this->position["join.pos"])) {
+            if ($b->equals($this->position["join.pos"])) {
                 if (empty ($this->team[$n])) {
                     if ($this->red < $this->blue) {
                         $this->red++;
