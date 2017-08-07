@@ -25,8 +25,8 @@ use pocketmine\utils\Config;
 
 class Main extends PluginBase implements Listener{
 
-    public $red, $blue = 0;
-    public $redHp, $blueHp = 75;
+    public $red = 0, $blue = 0;
+    public $redHp = 75, $blueHp = 75;
     public $team = [];
 
     public $settingsConfig, $settings, $positionConfig, $position;
