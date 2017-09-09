@@ -206,7 +206,7 @@ class Main extends PluginBase implements Listener{
                 if ($this->team[$ev->getDamager()->getName()] === $this->team[$p->getName()]) {
                     $ev->setCancelled();
                 } else {
-                    if ($p->getHealth() - round($ev->getFinalDamage()) <= 0) {
+                    if ($p->getHealth() - round($ev->getFinalDamage()) <= 0 && !($ev->isCancelled())) {
                         $ev->setCancelled();
                         $p->setHealth(20);
                         $p->setFood(20);
@@ -237,13 +237,19 @@ class Main extends PluginBase implements Listener{
                 }
             }
          } else {
-            if($p->getHealth() - round($ev->getFinalDamage()) <= 0) {
+            if($p->getHealth() - round($ev->getFinalDamage()) <= 0 && !($ev->isCancelled())) {
                 $ev->setCancelled();
                 $p->setHealth(20);
                 $p->setFood(20);
-                $p->setExp(0);
-                $p->getInventory()->clearAll();
-                $p->removeAllEffects();
+                if (!$this->settings["death.keep.exp"]) {
+                    $p->setExp(0);
+                }
+                if (!$this->settings["death.keep.inventory"]) {
+                    $p->getInventory()->clearAll();
+                }
+                if (!$this->settings["death.keep.inventory"]) {
+                    $p->removeAllEffects();
+                }
                 $t = $this->team[$p->getName()];
                 $pos = $t === "Red" ? $this->position["respawn.red"] : $this->position["respawn.blue"];
                 $p->teleport($pos);
