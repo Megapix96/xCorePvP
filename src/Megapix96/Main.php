@@ -25,14 +25,14 @@ use pocketmine\utils\Config;
 
 class Main extends PluginBase implements Listener{
 
-    public $red = 0, $blue = 0;
-    public $redHp = 75, $blueHp = 75;
-    public $team = [];
+    public $red = 0, $blue = 0,
+           $redHp = 75, $blueHp = 75,
+           $team = [],
 
-    public $settingsConfig, $settings, $positionConfig, $position;
-    public $redCoreTap, $blueCoreTap, $joinBlockTap;
+    	   $settingsConfig, $settings, $positionConfig, $position,
+    	   $redCoreTap, $blueCoreTap, $joinBlockTap;
 
-    public $moneyApi;
+    private $moneyAPI;
 
     public function onEnable() {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
@@ -55,6 +55,7 @@ class Main extends PluginBase implements Listener{
             "teamchat.str" => "@",
             "shutdown" => false
         ]);
+
         $this->positionConfig = new Config($this->getDataFolder() . "positions.json", Config::JSON, [
             "respawn.red" => $positionData,
             "respawn.blue" => $positionData,
@@ -73,6 +74,7 @@ class Main extends PluginBase implements Listener{
                 $this->getLogger()->critical("world名が異常です!");
                 $this->getServer()->getPluginManager()->disablePlugin($this);
             }
+
             $this->position[$key] = $this->toPosition($value);
             $this->getServer()->loadLevel($value["level"]);
         }
@@ -95,24 +97,16 @@ class Main extends PluginBase implements Listener{
         }
 
         if ($this->settings["money"]) {
-            if ($this->settings["money.api"] === "EconomyAPI") {
-                if ($this->getServer()->getPluginManager()->getPlugin("EconomyAPI") != null) {
-                    $this->moneyApi = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
-                    $this->getLogger()->info("§aEconomyAPIを読み込みました!");
+        	$api = $this->settings["money.api"];
+            if ($api === "EconomyAPI" or $api === "PocketMoney") {
+                if (($this->moneyAPI = $this->getServer()->getPluginManager()->getPlugin($api)) != null) {
+                    $this->getLogger()->info("§a" . $api . "を読み込みました!");
                 } else {
-                    $this->getLogger()->warning("§cEconomyAPIが見つかりませんでした!");
-                    $this->getServer()->getPluginManager()->disablePlugin($this);
-                }
-            } else if ($this->settings["money.api"] === "PocketMoney") {
-                if ($this->getServer()->getPluginManager()->getPlugin("PocketMoney") != null) {
-                    $this->moneyApi = $this->getServer()->getPluginManager()->getPlugin("PocketMoney");
-                    $this->getLogger()->info("§aPocketMoneyを読み込みました!");
-                } else {
-                    $this->getLogger()->warning("§cPocketMoneyが見つかりませんでした!");
+                    $this->getLogger()->warning("§c" . $api . "が見つかりませんでした!");
                     $this->getServer()->getPluginManager()->disablePlugin($this);
                 }
             } else {
-                $this->getLogger()->warning("§c" . $this->settings["money.api"] . " というAPIには対応していません!");
+                $this->getLogger()->warning("§c" . $api . " というAPIには対応しておりません。");
                 $this->getServer()->getPluginManager()->disablePlugin($this);
             }
         }
@@ -211,16 +205,15 @@ class Main extends PluginBase implements Listener{
                         $p->setHealth(20);
                         $p->setFood(20);
                         if (!$this->settings["death.keep.exp"]) {
-                            $p->setExp(0);
+                            $p->setXpProgress(0);
                         }
                         if (!$this->settings["death.keep.inventory"]) {
                             $p->getInventory()->clearAll();
                         }
-                        if (!$this->settings["death.keep.inventory"]) {
+                        if (!$this->settings["death.keep.effects"]) {
                             $p->removeAllEffects();
                         }
-                        $t = $this->team[$p->getName()];
-                        $pos = $t === "Red" ? $this->position["respawn.red"] : $this->position["respawn.blue"];
+                        $pos = $this->team[$p->getName()] === "Red" ? $this->position["respawn.red"] : $this->position["respawn.blue"];
                         $p->teleport($pos);
                         $p->sendMessage("死んでしまったので、復活しました");
                         $this->setDefaultArmor($p);
@@ -228,9 +221,9 @@ class Main extends PluginBase implements Listener{
                     if ($this->settings['money.kill']) {
                         $d = $ev->getDamager();
                         if ($this->settings['money.api'] === "EconomyAPI") {
-                            $this->moneyApi->addMoney($d->getName(), $this->settings['money.kill.amount']);
+                            $this->moneyAPI->addMoney($d->getName(), $this->settings['money.kill.amount']);
                         } else {
-                            $this->moneyApi->grantMoney($d->getName(), $this->settings['killmoney.money']);
+                            $this->moneyAPI->grantMoney($d->getName(), $this->settings['killmoney.money']);
                         }
                         $d->sendPopup("§e+ " . $this->settings['money.kill.amount'] . " coins!");
                     }
@@ -242,16 +235,15 @@ class Main extends PluginBase implements Listener{
                 $p->setHealth(20);
                 $p->setFood(20);
                 if (!$this->settings["death.keep.exp"]) {
-                    $p->setExp(0);
+                    $p->setXpProgress(0);
                 }
                 if (!$this->settings["death.keep.inventory"]) {
                     $p->getInventory()->clearAll();
                 }
-                if (!$this->settings["death.keep.inventory"]) {
+                if (!$this->settings["death.keep.effects"]) {
                     $p->removeAllEffects();
                 }
-                $t = $this->team[$p->getName()];
-                $pos = $t === "Red" ? $this->position["respawn.red"] : $this->position["respawn.blue"];
+                $pos = $this->team[$p->getName()] === "Red" ? $this->position["respawn.red"] : $this->position["respawn.blue"];
                 $p->teleport($pos);
                 $p->sendMessage("死んでしまったので、復活しました");
                 $this->setDefaultArmor($p);
@@ -369,9 +361,9 @@ class Main extends PluginBase implements Listener{
                 if ($this->team[$p->getName()] === $win) {
                     $p->sendMessage("§e".$this->settings["money.win.amount"]." coin 獲得!");
                     if ($this->settings['money.api'] === "EconomyAPI") {
-                        $this->moneyApi->addMoney($p->getName(), $this->settings['money.win.amount']);
+                        $this->moneyAPI->addMoney($p->getName(), $this->settings['money.win.amount']);
                     } else {
-                        $this->moneyApi->grantMoney($p->getName(), $this->settings['money.win.amount']);
+                        $this->moneyAPI->grantMoney($p->getName(), $this->settings['money.win.amount']);
                     }
                 }
             }
