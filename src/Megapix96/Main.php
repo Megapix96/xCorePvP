@@ -118,7 +118,7 @@ class Main extends PluginBase implements Listener{
         }
     }
     public function onLogin(PlayerLoginEvent $ev){
-       if(!$this->settings["enable"]) return;
+       if (!($this->settings["enable"])) return;
        $p = $ev->getPlayer();
        $n = $p->getName();
        $this->team[$n] = false;
@@ -127,7 +127,6 @@ class Main extends PluginBase implements Listener{
         if (!($this->settings["enable"])) return;
         $p = $ev->getPlayer();
         $n = $p->getName();
-        //$this->team[$n] = false;
         $this->returnToHub($p, false);
     }
 
@@ -212,8 +211,7 @@ class Main extends PluginBase implements Listener{
                         $p->setHealth(20);
                         $p->setFood(20);
                         if (!$this->settings["death.keep.exp"]) {
-                            //$p->setXpProgress(0);
-                            $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
+                            $this->setXpProgress($p,0);
                         }
                         if (!$this->settings["death.keep.inventory"]) {
                             $p->getInventory()->clearAll();
@@ -243,8 +241,7 @@ class Main extends PluginBase implements Listener{
                 $p->setHealth(20);
                 $p->setFood(20);
                 if (!$this->settings["death.keep.exp"]) {
-                    //$p->setXpProgress(0);
-                    $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
+                    $this->setXpProgress($p,0);
                 }
                 if (!$this->settings["death.keep.inventory"]) {
                     $p->getInventory()->clearAll();
@@ -379,9 +376,8 @@ class Main extends PluginBase implements Listener{
             $p->teleport($pos);
             $p->setHealth(20);
             $p->setFood(20);
-            //$p->setTotalXp(0);
-            $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue(0);
-            $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
+            $this->setXpProgress($p,0);
+            $this->setXpLevel($p,0);
             $p->getInventory()->clearAll();
             $p->removeAllEffects();
         }
@@ -410,12 +406,10 @@ class Main extends PluginBase implements Listener{
             $p->setDisplayName($p->getName());
             $p->setNameTag($p->getName());
         }
-
         $p->setHealth(20);
         $p->setFood(20);
-        //$p->setTotalXp(0);
-        $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue(0);
-        $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
+        $this->setXpProgress($p,0);
+        $this->setXpLevel($p,0);
         $p->getInventory()->clearAll();
         $p->removeAllEffects();
         $this->team[$p->getName()] = false;
@@ -452,7 +446,12 @@ class Main extends PluginBase implements Listener{
 
         return $item;
     }
-
+    public function setXpProgress($p,$value){
+       $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($value);
+    }
+    public function setXpLevel($p,$value){
+       $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($value);
+    }
     private function toPosition(array $configPosition) : Position {
         return new Position($configPosition["x"], $configPosition["y"], $configPosition["z"], $this->getServer()->getLevelByName($configPosition["level"]));
     }
