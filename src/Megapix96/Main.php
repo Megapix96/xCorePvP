@@ -10,6 +10,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\item\Item;
@@ -22,6 +23,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\utils\Color;
 use pocketmine\utils\Config;
+use pocketmine\entity\Attribute;
 
 class Main extends PluginBase implements Listener{
 
@@ -115,17 +117,22 @@ class Main extends PluginBase implements Listener{
             $this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, 'popup'], []), 20 * 1.5);
         }
     }
-
+    public function onLogin(PlayerLoginEvent $ev){
+       if(!$this->settings["enable"]) return;
+       $p = $ev->getPlayer();
+       $n = $p->getName();
+       $this->team[$n] = false;
+    }
     public function onJoin(PlayerJoinEvent $ev) {
         if (!($this->settings["enable"])) return;
         $p = $ev->getPlayer();
         $n = $p->getName();
-        $this->team[$n] = false;
+        //$this->team[$n] = false;
         $this->returnToHub($p, false);
     }
 
     public function onQuit(PlayerQuitEvent $ev) {
-        if (!($this->settings["enable"])) return;
+        if (!$this->settings["enable"]) return;
         $p = $ev->getPlayer();
         if ($this->team[$p->getName()] === "Red") {
             $this->red--;
@@ -205,7 +212,8 @@ class Main extends PluginBase implements Listener{
                         $p->setHealth(20);
                         $p->setFood(20);
                         if (!$this->settings["death.keep.exp"]) {
-                            $p->setXpProgress(0);
+                            //$p->setXpProgress(0);
+                            $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
                         }
                         if (!$this->settings["death.keep.inventory"]) {
                             $p->getInventory()->clearAll();
@@ -235,7 +243,8 @@ class Main extends PluginBase implements Listener{
                 $p->setHealth(20);
                 $p->setFood(20);
                 if (!$this->settings["death.keep.exp"]) {
-                    $p->setXpProgress(0);
+                    //$p->setXpProgress(0);
+                    $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
                 }
                 if (!$this->settings["death.keep.inventory"]) {
                     $p->getInventory()->clearAll();
@@ -370,7 +379,9 @@ class Main extends PluginBase implements Listener{
             $p->teleport($pos);
             $p->setHealth(20);
             $p->setFood(20);
-            $p->setTotalXp(0);
+            //$p->setTotalXp(0);
+            $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue(0);
+            $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
             $p->getInventory()->clearAll();
             $p->removeAllEffects();
         }
@@ -402,7 +413,9 @@ class Main extends PluginBase implements Listener{
 
         $p->setHealth(20);
         $p->setFood(20);
-        $p->setTotalXp(0);
+        //$p->setTotalXp(0);
+        $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue(0);
+        $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue(0);
         $p->getInventory()->clearAll();
         $p->removeAllEffects();
         $this->team[$p->getName()] = false;
