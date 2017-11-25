@@ -117,12 +117,14 @@ class Main extends PluginBase implements Listener{
             $this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, 'popup'], []), 20 * 1.5);
         }
     }
+
     public function onLogin(PlayerLoginEvent $ev){
        if (!($this->settings["enable"])) return;
        $p = $ev->getPlayer();
        $n = $p->getName();
        $this->team[$n] = false;
     }
+
     public function onJoin(PlayerJoinEvent $ev) {
         if (!($this->settings["enable"])) return;
         $p = $ev->getPlayer();
@@ -446,12 +448,15 @@ class Main extends PluginBase implements Listener{
 
         return $item;
     }
+
     public function setXpProgress($p,$value){
        $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($value);
     }
+
     public function setXpLevel($p,$value){
        $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($value);
     }
+
     private function toPosition(array $configPosition) : Position {
         return new Position($configPosition["x"], $configPosition["y"], $configPosition["z"], $this->getServer()->getLevelByName($configPosition["level"]));
     }
