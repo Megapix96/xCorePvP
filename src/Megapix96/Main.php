@@ -23,6 +23,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\utils\Config;
 use pocketmine\entity\Attribute;
+use Megapix96\Color;
 
 class Main extends PluginBase implements Listener{
 
