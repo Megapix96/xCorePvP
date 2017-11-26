@@ -21,7 +21,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\CallbackTask;
-use pocketmine\utils\Color;
+//use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 use pocketmine\entity\Attribute;
 
@@ -116,6 +116,7 @@ class Main extends PluginBase implements Listener{
         if ($this->settings['popup']) {
             $this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, 'popup'], []), 20 * 1.5);
         }
+     Color::init();
     }
 
     public function onLogin(PlayerLoginEvent $ev){
@@ -422,14 +423,16 @@ class Main extends PluginBase implements Listener{
         }
     }
 
+
+
     private function setDefaultArmor(Player $p) {
         $team = $this->team[$p->getName()];
         for ($i = 0; $i <= 3; $i++) {
             $item = Item::get(298 + $i);
             if ($team === "Red") {
-                $item = $this->setCutomColor($item, Color::getRGB(255,0,0));
+                $item = $this->setCustomColor($item, Color::getRGB(255,0,0));
             } else if($team === "Blue") {
-                $item = $this->setCutomColor($item, Color::getRGB(0,0,255));
+                $item = $this->setCustomColor($item, Color::getRGB(0,0,255));
             }
             $p->getInventory()->setArmorItem($i, $item);
         }
