@@ -10,6 +10,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\item\Item;
@@ -20,8 +21,9 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\CallbackTask;
-use pocketmine\utils\Color;
 use pocketmine\utils\Config;
+use pocketmine\entity\Attribute;
+use Megapix96\Color;
 
 class Main extends PluginBase implements Listener{
 
@@ -114,13 +116,20 @@ class Main extends PluginBase implements Listener{
         if ($this->settings['popup']) {
             $this->getServer()->getScheduler()->scheduleRepeatingTask(new CallbackTask([$this, 'popup'], []), 20 * 1.5);
         }
+     Color::init();
+    }
+
+    public function onLogin(PlayerLoginEvent $ev){
+       if (!($this->settings["enable"])) return;
+       $p = $ev->getPlayer();
+       $n = $p->getName();
+       $this->team[$n] = false;
     }
 
     public function onJoin(PlayerJoinEvent $ev) {
         if (!($this->settings["enable"])) return;
         $p = $ev->getPlayer();
         $n = $p->getName();
-        $this->team[$n] = false;
         $this->returnToHub($p, false);
     }
 
@@ -205,7 +214,7 @@ class Main extends PluginBase implements Listener{
                         $p->setHealth(20);
                         $p->setFood(20);
                         if (!$this->settings["death.keep.exp"]) {
-                            $p->setXpProgress(0);
+                            $this->setXpProgress($p,0);
                         }
                         if (!$this->settings["death.keep.inventory"]) {
                             $p->getInventory()->clearAll();
@@ -235,7 +244,7 @@ class Main extends PluginBase implements Listener{
                 $p->setHealth(20);
                 $p->setFood(20);
                 if (!$this->settings["death.keep.exp"]) {
-                    $p->setXpProgress(0);
+                    $this->setXpProgress($p,0);
                 }
                 if (!$this->settings["death.keep.inventory"]) {
                     $p->getInventory()->clearAll();
@@ -370,7 +379,8 @@ class Main extends PluginBase implements Listener{
             $p->teleport($pos);
             $p->setHealth(20);
             $p->setFood(20);
-            $p->setTotalXp(0);
+            $this->setXpProgress($p,0);
+            $this->setXpLevel($p,0);
             $p->getInventory()->clearAll();
             $p->removeAllEffects();
         }
@@ -399,10 +409,10 @@ class Main extends PluginBase implements Listener{
             $p->setDisplayName($p->getName());
             $p->setNameTag($p->getName());
         }
-
         $p->setHealth(20);
         $p->setFood(20);
-        $p->setTotalXp(0);
+        $this->setXpProgress($p,0);
+        $this->setXpLevel($p,0);
         $p->getInventory()->clearAll();
         $p->removeAllEffects();
         $this->team[$p->getName()] = false;
@@ -418,9 +428,9 @@ class Main extends PluginBase implements Listener{
         for ($i = 0; $i <= 3; $i++) {
             $item = Item::get(298 + $i);
             if ($team === "Red") {
-                $item = $this->setCutomColor($item, Color::getRGB(255,0,0));
+                $item = $this->setCustomColor($item, Color::getRGB(255,0,0));
             } else if($team === "Blue") {
-                $item = $this->setCutomColor($item, Color::getRGB(0,0,255));
+                $item = $this->setCustomColor($item, Color::getRGB(0,0,255));
             }
             $p->getInventory()->setArmorItem($i, $item);
         }
@@ -438,6 +448,14 @@ class Main extends PluginBase implements Listener{
         $item->setCompoundTag($tag);
 
         return $item;
+    }
+
+    public function setXpProgress($p,$value){
+       $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($value);
+    }
+
+    public function setXpLevel($p,$value){
+       $p->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($value);
     }
 
     private function toPosition(array $configPosition) : Position {
