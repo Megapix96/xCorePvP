@@ -133,7 +133,7 @@ class Main extends PluginBase implements Listener{
     }
 
     public function onQuit(PlayerQuitEvent $ev) {
-        if (!$this->settings["enable"]) return;
+        if (!($this->settings["enable"])) return;
         $p = $ev->getPlayer();
         if ($this->team[$p->getName()] === "Red") {
             $this->red--;
