@@ -21,7 +21,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\CallbackTask;
-//use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 use pocketmine\entity\Attribute;
 
@@ -422,8 +421,6 @@ class Main extends PluginBase implements Listener{
             $p->sendMessage("§bHubに戻りました!");
         }
     }
-
-
 
     private function setDefaultArmor(Player $p) {
         $team = $this->team[$p->getName()];
